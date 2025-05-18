@@ -3,72 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" 
-          content="default-src 'self' https://*.firebaseio.com;
-                   script-src 'self' https://cdnjs.cloudflare.com https://www.gstatic.com https://*.firebasedatabase.app;
-                   style-src 'self' 'unsafe-inline';
-                   img-src * data:;
-                   connect-src 'self' https://*.firebaseio.com wss://*.firebaseio.com;
-                   font-src 'self' https://cdnjs.cloudflare.com;
-                   object-src 'none';
-                   base-uri 'self';
-                   form-action 'self'">
-    <title>Anonymous CyberChat v2.0</title>
-    <link rel="stylesheet" 
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" 
-          integrity="sha512-...">
+    <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self' https://*.firebaseio.com;
+    script-src 'self' https://cdnjs.cloudflare.com https://www.gstatic.com https://cdn.jsdelivr.net;
+    style-src 'self' 'unsafe-inline';
+    img-src * data:;
+    ">
+    <title>Anonymous CyberChat</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="crt">
-    <!-- Overlay эффекты -->
-    <div class="cyber-overlay"></div>
-    
-    <!-- Статус-бар -->
-    <div class="status-bar">
-        <div class="system-time" id="clock">23:59:45</div>
-        <div class="network-status">
-            <i class="fas fa-signal"></i>
-            <span class="ping-counter">PING: <span id="pingValue">0</span>ms</span>
-        </div>
+    <div class="online-counter">
+        ONLINE: <span id="onlineCount">0</span>
     </div>
+    <canvas id="matrixCanvas"></canvas>
+    <div class="chat-container"></div>
 
-    <!-- Основной интерфейс -->
-    <div class="cyber-terminal">
-        <div class="online-counter glow-effect">
-            <i class="fas fa-user-secret"></i>
-            <span id="onlineCount">0</span> ACTIVE TERMINALS
-        </div>
-        
-        <canvas id="matrixCanvas" class="matrix-background"></canvas>
-        
-        <div class="chat-container" id="chatContainer">
-            <div class="system-message startup-sequence">
-                <div class="scan-line"></div>
-                INITIALIZING SYSTEM... OK<br>
-                LOADING CIPHER KEYS... OK<br>
-                ESTABLISHING CONNECTION... OK
-            </div>
-        </div>
+    <form id="chatForm" class="chat-form">
+        <input type="text" class="chat-input" placeholder="Введите сообщение...">
+        <button type="submit">➤</button>
+    </form>
 
-        <form id="chatForm" class="chat-form neon-border">
-            <input type="text" 
-                   class="chat-input" 
-                   placeholder="ВВЕДИТЕ СООБЩЕНИЕ..."
-                   maxlength="200"
-                   aria-label="Ввод сообщения">
-            <button type="submit" class="cyber-button">
-                <span class="button-text">TRANSMIT</span>
-                <span class="button-glitch"></span>
-            </button>
-        </form>
-    </div>
-
-    <!-- Внешние зависимости -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Только необходимые зависимости -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.3/purify.min.js"></script>
-    
-    <!-- Firebase и основной код -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script type="module" src="app.js"></script>
-    </script>
 </body>
 </html>
