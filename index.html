@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://*.firebaseio.com; script-src 'self' https://cdnjs.cloudflare.com https://www.gstatic.com; style-src 'self' 'unsafe-inline'; img-src * data:;">
+    <title>Anonymous CyberChat</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="crt">
+    <div class="online-counter">
+        ONLINE: <span id="onlineCount">0</span>
+    </div>
+    <canvas id="matrixCanvas"></canvas>
+    <div class="chat-container"></div>
+
+    <form id="chatForm" class="chat-form">
+        <input type="text" class="chat-input" placeholder="Введите сообщение...">
+        <button type="submit">➤</button>
+    </form>
+
+    <!-- Только необходимые зависимости -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
