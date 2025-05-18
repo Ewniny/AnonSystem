@@ -4,16 +4,25 @@
     --border-color: #0a0;
     --danger: #f00;
     --glow: 0 0 10px #0f0;
+    --message-bg: rgba(0, 30, 0, 0.3);
+    --self-message-bg: rgba(30, 0, 0, 0.3);
+    --scrollbar-bg: #001100;
+    --overlay-opacity: 0.1;
+    --transition-speed: 0.3s;
 }
 
 body.crt {
     background: var(--main-bg);
     color: var(--text-color);
-    font-family: 'Courier New', monospace;
-    line-height: 1.4;
-    position: relative;
+    font-family: 'Courier New', monospace, system-ui;
+    line-height: 1.6;
+    min-height: 100vh;
+    text-rendering: optimizeSpeed;
+    overflow-x: hidden;
 }
 
+/* Улучшенный CRT-эффект */
+.crt::before,
 .crt::after {
     content: "";
     position: fixed;
@@ -22,152 +31,168 @@ body.crt {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    background: linear-gradient(rgba(0, 255, 0, 0.1) 50%, transparent 50%);
-    background-size: 100% 2px;
     z-index: 9999;
-    animation: scanline 2s linear infinite;
+}
+
+.crt::before {
+    background: linear-gradient(
+        to bottom,
+        transparent 50%,
+        rgba(0, 0, 0, 0.1) 50%
+    );
+    background-size: 100% 4px;
+    animation: scanline 6s linear infinite;
+}
+
+.crt::after {
+    background: radial-gradient(
+        ellipse at center,
+        rgba(0, 255, 0, 0.05) 0%,
+        rgba(0, 255, 0, 0) 70%
+    );
+    animation: flicker 0.15s infinite;
 }
 
 @keyframes scanline {
-    from { transform: translateY(-100%); }
-    to { transform: translateY(100%); }
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
 }
 
-[data-untrusted] {
-    display: none !important;
+@keyframes flicker {
+    0% { opacity: 0.9; }
+    50% { opacity: 1; }
+    100% { opacity: 0.9; }
 }
 
+/* Адаптивный контейнер чата */
 .chat-container {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 15px;
+    max-width: min(800px, 90vw);
+    margin: 2rem auto;
+    padding: 1.5rem;
     border: 1px solid var(--border-color);
-    border-radius: 3px;
     background: rgba(0, 20, 0, 0.95);
     box-shadow: var(--glow);
     max-height: 70vh;
-    overflow-y: auto;
+    overflow-y: overlay;
+    scroll-behavior: smooth;
+    backdrop-filter: blur(2px);
 }
 
+/* Улучшенный скроллбар */
 .chat-container::-webkit-scrollbar {
-    width: 8px;
-    background: #001100;
+    width: 10px;
+}
+
+.chat-container::-webkit-scrollbar-track {
+    background: var(--scrollbar-bg);
 }
 
 .chat-container::-webkit-scrollbar-thumb {
     background: var(--border-color);
-    border-radius: 4px;
+    border-radius: 5px;
+    border: 2px solid var(--scrollbar-bg);
 }
 
+/* Анимация сообщений */
 .message {
-    margin: 15px 0;
-    padding: 10px;
+    margin: 1.5rem 0;
+    padding: 1rem;
     border-left: 3px solid var(--border-color);
-    background: rgba(0, 30, 0, 0.3);
+    background: var(--message-bg);
     position: relative;
-    animation: messageAppear 0.3s ease-out;
+    animation: messageAppear 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    transition: transform var(--transition-speed), opacity var(--transition-speed);
+}
+
+.message:hover {
+    transform: translateX(5px);
 }
 
 .message.self {
     border-color: var(--danger);
-    background: rgba(30, 0, 0, 0.3);
+    background: var(--self-message-bg);
+    margin-left: 10%;
 }
 
-.msg-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 5px;
-    font-size: 0.9em;
-    opacity: 0.8;
-}
-
+/* Интерактивные элементы */
 .delete-btn {
     background: none;
-    border: none;
+    border: 1px solid var(--danger);
     color: var(--danger);
     cursor: pointer;
-    padding: 0 5px;
+    padding: 0.2rem 0.5rem;
+    transition: all var(--transition-speed);
 }
 
-.chat-form {
-    max-width: 800px;
-    margin: 20px auto;
-    display: flex;
-    gap: 10px;
-}
-
-.chat-input {
-    flex-grow: 1;
-    background: rgba(0, 20, 0, 0.9);
-    border: 1px solid var(--border-color);
-    color: var(--text-color);
-    padding: 8px;
-    font-family: inherit;
-}
-
-.chat-input:invalid {
-    border-color: var(--danger);
-    box-shadow: 0 0 5px var(--danger);
+.delete-btn:hover {
+    background: var(--danger);
+    color: var(--main-bg);
 }
 
 .chat-form button {
     background: var(--border-color);
-    border: none;
-    color: var(--main-bg);
-    padding: 8px 15px;
-    cursor: pointer;
+    transition: all var(--transition-speed);
 }
 
-.online-counter {
-    position: fixed;
-    top: 10px;
-    right: 10px;
+.chat-form button:hover {
+    filter: brightness(1.2);
+    box-shadow: var(--glow);
+}
+
+/* Адаптивная форма */
+.chat-form {
+    max-width: min(800px, 90vw);
+    margin: 2rem auto;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+}
+
+.chat-input {
     background: rgba(0, 20, 0, 0.9);
-    padding: 8px;
     border: 1px solid var(--border-color);
-    font-size: 0.9em;
+    transition: border-color var(--transition-speed);
+    min-height: 44px;
 }
 
+/* Индикатор набора текста */
 .typing-indicator {
-    position: fixed;
-    bottom: 70px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 20, 0, 0.9);
-    padding: 5px 10px;
-    border: 1px solid var(--border-color);
-    opacity: 0;
-    transition: opacity 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.typing-indicator.active {
-    opacity: 1;
+.typing-indicator::after {
+    content: "...";
+    animation: typing 1.5s infinite;
 }
 
-.error-message {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--danger);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 3px;
-    animation: errorSlide 0.3s ease-out;
+@keyframes typing {
+    0%, 60%, 100% { opacity: 0.4; }
+    30% { opacity: 1; }
 }
 
-@keyframes errorSlide {
-    from { bottom: -50px; }
-    to { bottom: 20px; }
-}
-
-@keyframes messageAppear {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
+/* Медиа-запросы для мобильных устройств */
+@media (max-width: 768px) {
+    .chat-container {
+        margin: 1rem auto;
+        padding: 1rem;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    
+    .chat-form {
+        grid-template-columns: 1fr;
+    }
+    
+    .message {
+        margin: 1rem 0;
+        padding: 0.8rem;
+    }
+}
+
+/* Оптимизация анимаций */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
     }
 }
