@@ -172,41 +172,47 @@
             }
             setupPresence() {
                 try {
-                    const db = getDatabase();
-                    const connectionsRef = ref(db, 'connections');
-                    
-                    // Создаем новую запись
-                    const newPresenceRef = push(connectionsRef);
-                    this.presenceRef = newPresenceRef;
+                    // Создаем новую запись в базе данных
+                    const presenceRef = push(ref(db, 'connections'));
+                    this.presenceRef = presenceRef;
 
-                    // Устанавливаем значение
-                    set(newPresenceRef, this.userId)
-                        .catch(error => console.error("Error setting presence:", error));
+                    // Настраиваем автоматическое удаление при отключении
+                    onDisconnect(presenceRef).remove()
+                        .then(() => console.debug("OnDisconnect handler установлен"))
+                        .catch(console.error);
 
-                    // Настраиваем удаление при отключении
-                    onDisconnect(newPresenceRef).remove()
-                        .catch(error => console.error("OnDisconnect error:", error));
+                    // Устанавливаем текущего пользователя
+                    presenceRef.set(this.userId)
+                        .catch(console.error);
 
-                    // Слушаем изменения
-                    onValue(connectionsRef, (snapshot) => {
+                    // Следим за списком подключений
+                    const onlineUsersRef = ref(db, 'connections');
+                    onValue(onlineUsersRef, (snapshot) => {
                         const users = [];
                         snapshot.forEach(child => {
-                            const user = child.val();
-                            if(user) users.push(user);
+                            const val = child.val();
+                            if(val) users.push(val);
                         });
                         this.renderOnlineUsers(users);
+                    }, {
+                        onlyOnce: false
                     });
 
                 } catch(error) {
-                    console.error("Presence system error:", error);
+                    console.error("Ошибка инициализации присутствия:", error);
                 }
             }
 
             renderOnlineUsers(users) {
                 const countElement = document.getElementById('onlineCount');
+                const list = document.getElementById('onlineUsersList');
+                
                 if(countElement) countElement.textContent = users.length;
+                if(list) list.innerHTML = users.map(user => 
+                    `<li class="user-item">${this.sanitize(user)}</li>`
+                ).join('');
             }
-                }
+        }
 
         window.addEventListener('DOMContentLoaded', () => {
             new CyberChat();
